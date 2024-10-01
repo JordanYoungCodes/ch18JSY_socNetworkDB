@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { User, Thought } = require('../../models');
+const { User, Thought } = require('../models');
 
 // Get all users
 router.get('/', async (req, res) => {
@@ -46,41 +46,11 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
+    // Optionally remove user's thoughts if required
     res.json(user);
   } catch (err) {
     res.status(500).json(err);
   }
 });
-
-
-// Add a friend to a user's friend list
-router.post('/:id/friends/:friendId', async (req, res) => {
-  try {
-    const updatedUser = await User.findByIdAndUpdate(
-      req.params.id, 
-      { $addToSet: { friends: req.params.friendId } }, 
-      { new: true }
-    );
-    res.json(updatedUser);
-  } catch (err) {
-    res.status(500).json(err);
-  }
-});
-
-
-// Remove a friend from a user's friend list
-router.delete('/:id/friends/:friendId', async (req, res) => {
-  try {
-    const updatedUser = await User.findByIdAndUpdate(
-      req.params.id, 
-      { $pull: { friends: req.params.friendId } }, 
-      { new: true }
-    );
-    res.json(updatedUser);
-  } catch (err) {
-    res.status(500).json(err);
-  }
-});
-
 
 module.exports = router;
